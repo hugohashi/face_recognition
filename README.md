@@ -1,10 +1,10 @@
 
-# Sistemas avançados de visão industrial - Trabalho Prático 1, Grupo 3
+# Project for Computer Vision Class
 
 
-## Tabela de conteúdos
+## Content Table
 
-1. [Objetivos do trabalho](#objectives)
+1. [Project Objectives](#objectives)
 
 2. [Bibliotecas necessarias](#libraries)
 
@@ -14,27 +14,21 @@
 
 
 <a name="objectives"></a>
-## 1. Objetivos do trabalho:
+## 1. Project Objectives:
 
-1 - O sistema deverá detetar caras sempre que alguém chegar perto. 
+1 - The system should detect faces. 
 
-2 - Para além de detetar as caras o sistema deverá ser capaz de reconhecer as várias pessoas da turma (ou do grupo). 
-Para isso pode funcionar com uma base de dados pré-gravada. 
-Deve também ser possível iniciar o sistema sem ter ainda informação sobre nenhuma pessoa.
+2 - It should recognize the people from the group, working with a pre-loaded database. 
 
-3 - Deve ser possível visualizar a base de dados das pessoas em tempo real.
+3 - There should be also a way to run the program without any information in the database.
 
-4 - O sistema deverá identificar as pessoas que reconhece, e perguntar sobre as pessoas desconhecidas.
+4 - It needs a function to show the database in real-time.
 
-5 - O sistema deve cumprimentar as pessoas que já conhece, dizendo "Hello ". 
-Poderá utilizar uma ferramenta de \emph{text to speech}, por exemplo https://pypi.org/project/pyttsx3/
-
-6 - O sistema deverá fazer o seguimento das pessoas na sala e manter a identificação em cima das pessoas que reconheceu anteriormente, 
-ainda que atualmente não seja possível reconhecê-las.
+5 - The system should greet the people on the database and ask about new people.
 
 
 <a name="libraries"></a>
-## 2. Bibliotecas necessarias
+## 2. Requirements
 
 opencv
 
@@ -64,33 +58,31 @@ sounddevice
 
 
 <a name="functioning"></a>
-## 3. Funcionamento
+## 3. Functioning
 
-O programa liga a camera e se não reconhece a pessoa no frame ele pergunta-lhe o nome;
+The program turns on the camera and if it doesn't recognize the person on the frame it asks for their name;
 
-liga o mic e transcreve a fala para uma string com o nome da pessoa;
+When the person answers it records the name, takes a picture of the new person and saves it with the corresponding name;
 
-Após associar salvar a string, o sistema tira uma foto e salva com aquele nome na base de dados.
-
-Se o sistema já reconhece a pessoa no frame ele cumprimenta-a.
+If the system already knows the person that is in the frame, it greets them.
 
 
 <a name="run"></a>
-## 4. Como rodar o script
+## 4. How to run the script
 
-No terminal clonar o repositorio
+Clone the repository
 
  ```
 git clone https://github.com/ritapm18/Trab1_G3
  ```
 
-Entrar na pasta em que salvou
+Go into the folder
 
  ```
 cd path/to/folder
  ```
 
-Rodar o main script
+Run main script
 
  ```
 python3 main.py
