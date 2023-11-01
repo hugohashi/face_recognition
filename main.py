@@ -7,6 +7,7 @@ import copy
 import random
 import math
 from threading import Thread
+import speech_recognition as sr
 
 from face_rec import FaceRec, Track, Detection, IOU
 from pc_talk_to_us import say
@@ -15,6 +16,7 @@ from show_db import show_database
 
 
 def main():
+    global speech_triggered
 
     # Start Camera
     video = cv2.VideoCapture(0)
@@ -25,15 +27,15 @@ def main():
     #Load/Encode Images
     face_recog.load_images("./images")
 
-    # Create a flag to trigger the speech just once
-    speech_triggered = False
-
     tracks = []
 
     frame_number = 0
 
+    speech_triggered = False
 
-    def do_something(speech_triggered):
+    def do_something():
+
+        global speech_triggered
 
         # Detect/Locate Faces and get Names of every face from the file name
         face_locations, face_names = face_recog.detect_known_faces(frame)
@@ -46,7 +48,7 @@ def main():
             y1, x2, y2, x1 = face_loc 
             detection = Detection(x1, x2, y1, y2, name, frame_stamp) 
             detections.append(detection)
-            
+
         for detection in detections:
 
             #if person is unknown, ask 'what's your name', save the name and face image
@@ -54,7 +56,7 @@ def main():
 
                 #If Speech was triggered before set back to false to make sure it will trigger again
                 speech_triggered = False
-                
+
                 #checks if the new detection corresponds to an old track through the distance between the center of rectangles and common area between rectangles
                 if len(tracks) > 0:
                     for track in tracks:
@@ -68,6 +70,12 @@ def main():
 
                 if not speech_triggered:
 
+                    start_point = (detection.left, detection.top)
+                    end_point = (detection.right, detection.bottom)
+                    cv2.rectangle(image_gui, start_point, end_point, (0, 0, 255), 2) # draw rectangle
+                    cv2.imshow('Face recognition', image_gui)
+                    cv2.waitKey(10)
+
                     # Start speech thread / Ask the unknown person what's their name
                     text = "What's Your name?"
 
@@ -78,16 +86,27 @@ def main():
                     speech_triggered = True
 
                     # Save new person
-                    new_name = tell_your_name()
-                    face = frame[detection.top-100:detection.bottom+50, detection.left-60:detection.right+60]
+                    try:
+                        new_name = tell_your_name()
+                    except sr.UnknownValueError:
+                        new_name = input("Please type your name: ")
 
-                    cv2.imwrite(f'./images/{new_name}.jpg', face)  # Smile and take a pic                    
+
+                    face = frame[detection.top-10:detection.bottom+10, detection.left-10:detection.right+10]
+
+
+                    try:
+                        cv2.imwrite(f'./images/{new_name}.jpg', face)  # Smile and take a pic      
+                    except cv2.error:
+                        cv2.imwrite(f'./images/{new_name}.jpg', frame)  # Smile and take a pic      
+
                     face_recog.load_images("./images")  # Reload images after adding a new one                    
                     face_names.append(new_name)  # Add the new name to the list of known names
 
                     #If Speech was triggered before set back to false to make sure it will trigger again to greet the new person
                     speech_triggered = False
 
+                    ### Greet new person
                     text = f"Hello, {new_name}"
 
                     # # Start speech thread
@@ -98,7 +117,7 @@ def main():
                     speech_triggered = True
 
             #If person is known say Hello
-            elif detection.det_id != "Unknown" and speech_triggered == False:
+            if detection.det_id != "Unknown" and speech_triggered == False:
                 text = f"Hello, {detection.det_id}"
 
                 # # Start speech thread
@@ -117,7 +136,7 @@ def main():
                     track.update(detection)
                     track.active = True
                     idx_remove.append(idx) #saves the detection's index to remove afterwards
-                    break  
+                    break
 
         # remove from the detection list those related to a track 
         idx_remove.reverse()
@@ -144,7 +163,7 @@ def main():
                 track.draw(image_gui)
             #if track is inactive shows a message
             elif track.id != "Unknown" and track.active == False:
-                cv2.putText(image_gui, track.id + ' was previously detected', (30,30+y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, track.color, 1)
+                cv2.putText(image_gui, track.id + ' was previously detected', (30,30+y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, track.color, 2)
                 y += 20
 
 
@@ -161,11 +180,10 @@ def main():
         #for the first frame, shows the windows where is going to detect faces
         if frame_number == 0:
             cv2.imshow("Face recognition", image_gui)
-            cv2.waitKey(5)
+            cv2.waitKey(100)
             frame_number += 1
         
-        do_something(speech_triggered)
-        speech_triggered = True
+        do_something()
 
         #Show windows with person to detect
         cv2.imshow("Face recognition", image_gui)

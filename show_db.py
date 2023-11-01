@@ -30,4 +30,4 @@ def show_database(path):
                 cv2.imshow('Images in data base', img)
 
                 # Wait for a key press or a specified delay (0 means indefinite)
-                key = cv2.waitKey(1000)
+                key = cv2.waitKey(10)

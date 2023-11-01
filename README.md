@@ -6,11 +6,11 @@
 
 1. [Project Objectives](#objectives)
 
-2. [Bibliotecas necessarias](#libraries)
+2. [Required Libraries](#libraries)
 
-3. [Funcionamento](#functioning)
+3. [Functioning](#functioning)
 
-4. [Como rodar o script](#run)
+4. [How to run the script](#run)
 
 
 <a name="objectives"></a>
@@ -28,7 +28,7 @@
 
 
 <a name="libraries"></a>
-## 2. Requirements
+## 2. Required Libraries
 
 opencv
 
